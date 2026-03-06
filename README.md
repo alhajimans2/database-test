@@ -14,6 +14,8 @@
 - Render will create `tit-database-app` web service.
 - For free-tier test deployments, blueprint uses SQLite in `/tmp` (ephemeral).
 - Optional upgrade for persistent data: set `DATABASE_URL` to external Postgres (Neon/Supabase/Render Postgres) and redeploy.
+- For initial test login, blueprint creates a default admin (`admin` / `admin123`).
+- After first successful login, change password and set `CREATE_DEFAULT_ADMIN=false` in Render env vars.
 - After first deploy, verify environment values in Render dashboard and keep `CREATE_DEFAULT_ADMIN=false` unless doing first-time bootstrap.
 
 ## 3) Required backend environment variables

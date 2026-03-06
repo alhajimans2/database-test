@@ -27,6 +27,12 @@ services:
       - key: CORS_ORIGINS
         value: https://titdb.netlify.app
       - key: CREATE_DEFAULT_ADMIN
-        value: "false"
+        value: "true"
+      - key: DEFAULT_ADMIN_USERNAME
+        value: admin
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@tit.local
+      - key: DEFAULT_ADMIN_PASSWORD
+        value: admin123
       - key: SECRET_KEY
         generateValue: true
