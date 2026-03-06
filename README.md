@@ -24,6 +24,12 @@ Use values from `.env.example`:
 - `COOKIE_SECURE=true`
 - `TRUST_PROXY=true`
 
+`DATABASE_URL` examples:
+- SQLite test mode: `sqlite:////tmp/tit_database.db`
+- Postgres mode: `postgresql+psycopg://user:password@host:5432/database`
+
+If deploy logs show `Could not parse SQLAlchemy URL`, your `DATABASE_URL` value is malformed (or contains placeholder text).
+
 Recommended:
 - `CREATE_DEFAULT_ADMIN=false` (or `true` only on first deploy)
 - `CORS_ORIGINS=https://<your-netlify-domain>`

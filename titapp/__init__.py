@@ -7,6 +7,8 @@ from flask import Flask, request, g, render_template
 from flask_login import current_user
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
+from sqlalchemy.engine.url import make_url
+from sqlalchemy.exc import ArgumentError
 
 try:
     import sentry_sdk
@@ -20,13 +22,22 @@ from .bootstrap import bootstrap_data
 
 
 def get_database_uri() -> str:
-    database_url = os.getenv('DATABASE_URL')
+    database_url = (os.getenv('DATABASE_URL') or '').strip()
     if database_url:
         if database_url.startswith('postgres://'):
             database_url = database_url.replace('postgres://', 'postgresql+psycopg://', 1)
         elif database_url.startswith('postgresql://'):
             database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
-        return database_url
+
+        try:
+            make_url(database_url)
+            return database_url
+        except ArgumentError:
+            logging.getLogger('titapp').warning('Invalid DATABASE_URL provided; using SQLite fallback.')
+
+    app_env = (os.getenv('APP_ENV') or '').lower()
+    if app_env == 'production':
+        return 'sqlite:////tmp/tit_database.db'
     return 'sqlite:///tit_database.db'
 
 
