@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import secrets
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
@@ -12,6 +13,38 @@ from .email_utils import send_email_message
 
 
 auth_bp = Blueprint('auth', __name__)
+
+
+def _provision_default_admin_for_login(username: str, password: str):
+    create_default_admin = os.getenv('CREATE_DEFAULT_ADMIN', 'false').lower() == 'true'
+    if not create_default_admin:
+        return
+
+    default_admin_user = (os.getenv('DEFAULT_ADMIN_USERNAME', 'admin') or 'admin').strip()
+    default_admin_email = (os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@tit.ac.zw') or 'admin@tit.ac.zw').strip()
+    default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin123')
+
+    if username != default_admin_user or password != default_admin_password:
+        return
+
+    admin = User.query.filter_by(username=default_admin_user).first()
+    if not admin:
+        admin = User(
+            username=default_admin_user,
+            email=default_admin_email,
+            full_name='System Administrator',
+            role='admin'
+        )
+        db.session.add(admin)
+    else:
+        admin.email = default_admin_email
+        admin.role = 'admin'
+
+    admin.set_password(default_admin_password)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 
 def _generate_otp_code() -> str:
@@ -84,6 +117,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+        _provision_default_admin_for_login(username, password)
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             if _is_admin_user(user) and _admin_otp_enabled():
