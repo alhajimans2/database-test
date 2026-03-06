@@ -165,9 +165,9 @@ def bootstrap_data(app):
 
         create_default_admin = os.getenv('CREATE_DEFAULT_ADMIN', 'false').lower() == 'true'
         if create_default_admin:
-            default_admin_user = os.getenv('DEFAULT_ADMIN_USERNAME', 'admin')
+            default_admin_user = os.getenv('DEFAULT_ADMIN_USERNAME', 'titadmin')
             default_admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@tit.ac.zw')
-            default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin123')
+            default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'TITAdmin@2026!')
 
             admin = User.query.filter_by(username=default_admin_user).first()
             if not admin:

@@ -29,10 +29,10 @@ services:
       - key: CREATE_DEFAULT_ADMIN
         value: "true"
       - key: DEFAULT_ADMIN_USERNAME
-        value: admin
+        value: titadmin
       - key: DEFAULT_ADMIN_EMAIL
         value: admin@tit.local
       - key: DEFAULT_ADMIN_PASSWORD
-        value: admin123
+        value: TITAdmin@2026!
       - key: SECRET_KEY
         generateValue: true

@@ -20,9 +20,9 @@ def _provision_default_admin_for_login(username: str, password: str):
     if not create_default_admin:
         return
 
-    default_admin_user = (os.getenv('DEFAULT_ADMIN_USERNAME', 'admin') or 'admin').strip()
+    default_admin_user = (os.getenv('DEFAULT_ADMIN_USERNAME', 'titadmin') or 'titadmin').strip()
     default_admin_email = (os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@tit.ac.zw') or 'admin@tit.ac.zw').strip()
-    default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin123')
+    default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'TITAdmin@2026!')
 
     if username != default_admin_user or password != default_admin_password:
         return
