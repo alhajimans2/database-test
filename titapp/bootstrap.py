@@ -164,17 +164,24 @@ def bootstrap_data(app):
             _reconcile_sqlite_schema()
 
         create_default_admin = os.getenv('CREATE_DEFAULT_ADMIN', 'false').lower() == 'true'
-        if create_default_admin and not User.query.first():
+        if create_default_admin:
             default_admin_user = os.getenv('DEFAULT_ADMIN_USERNAME', 'admin')
             default_admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@tit.ac.zw')
             default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin123')
-            admin = User(
-                username=default_admin_user,
-                email=default_admin_email,
-                full_name='System Administrator',
-                role='admin'
-            )
+
+            admin = User.query.filter_by(username=default_admin_user).first()
+            if not admin:
+                admin = User(
+                    username=default_admin_user,
+                    email=default_admin_email,
+                    full_name='System Administrator',
+                    role='admin'
+                )
+                db.session.add(admin)
+            else:
+                admin.email = default_admin_email
+                admin.role = 'admin'
+
             admin.set_password(default_admin_password)
-            db.session.add(admin)
             db.session.commit()
             app.logger.warning('Default admin created via bootstrap. Disable CREATE_DEFAULT_ADMIN after first deploy.')
