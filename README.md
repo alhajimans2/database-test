@@ -32,6 +32,11 @@ Use values from `.env.example`:
 
 If deploy logs show `Could not parse SQLAlchemy URL`, your `DATABASE_URL` value is malformed (or contains placeholder text).
 
+Production data persistence note:
+- Do not use `/tmp` SQLite for production persistence.
+- Set a valid persistent `DATABASE_URL` (recommended PostgreSQL).
+- App now blocks production startup when `DATABASE_URL` is missing/invalid unless `ALLOW_EPHEMERAL_DB=true` is explicitly set for temporary testing.
+
 Recommended:
 - `CREATE_DEFAULT_ADMIN=false` (or `true` only on first deploy)
 - `CORS_ORIGINS=https://<your-netlify-domain>`

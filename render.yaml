@@ -12,6 +12,8 @@ services:
         value: 3.11.9
       - key: APP_ENV
         value: production
+      - key: ALLOW_EPHEMERAL_DB
+        value: "false"
       - key: FLASK_DEBUG
         value: "false"
       - key: AUTO_CREATE_DB
@@ -21,7 +23,7 @@ services:
       - key: TRUST_PROXY
         value: "true"
       - key: DATABASE_URL
-        value: sqlite:////tmp/tit_database.db
+        value: ""
       - key: DB_SSLMODE
         value: require
       - key: CORS_ORIGINS

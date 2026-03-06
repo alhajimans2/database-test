@@ -36,7 +36,16 @@ def get_database_uri() -> str:
             logging.getLogger('titapp').warning('Invalid DATABASE_URL provided; using SQLite fallback.')
 
     app_env = (os.getenv('APP_ENV') or '').lower()
+    allow_ephemeral_db = (os.getenv('ALLOW_EPHEMERAL_DB', 'false') or 'false').lower() == 'true'
+    if app_env == 'production' and not allow_ephemeral_db:
+        raise RuntimeError(
+            'Persistent database is required in production. '
+            'Set a valid DATABASE_URL (recommended: PostgreSQL). '
+            'For temporary testing only, set ALLOW_EPHEMERAL_DB=true.'
+        )
+
     if app_env == 'production':
+        logging.getLogger('titapp').warning('Running in production with ephemeral SQLite fallback. Data will not be permanent.')
         return 'sqlite:////tmp/tit_database.db'
     return 'sqlite:///tit_database.db'
 
