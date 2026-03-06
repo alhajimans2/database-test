@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TIT DBMS{% endblock %} | Temzo Institute of Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="app-body{% if ui_compact_tables %} compact-tables{% endif %}" data-theme-default="{{ ui_theme_preference or 'system' }}">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='TIT Logo.jpg') }}" alt="TIT Logo" class="sidebar-logo">
+            <div class="sidebar-brand">
+                <h2>TIT</h2>
+                <span>DBMS</span>
+            </div>
+            <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-section">Main</li>
+                <li><a href="{{ url_for('main.dashboard') }}" class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+
+                <li class="nav-section">Students</li>
+                <li><a href="{{ url_for('students.student_list') }}" class="{% if request.endpoint == 'students.student_list' %}active{% endif %}"><i class="fas fa-users"></i><span>All Students</span></a></li>
+                <li><a href="{{ url_for('students.add_student') }}" class="{% if request.endpoint == 'students.add_student' %}active{% endif %}"><i class="fas fa-user-plus"></i><span>Register Student</span></a></li>
+                <li><a href="{{ url_for('students.recycle_bin') }}" class="{% if request.endpoint == 'students.recycle_bin' %}active{% endif %}"><i class="fas fa-recycle"></i><span>Recycle Bin</span></a></li>
+
+                <li class="nav-section">Insights</li>
+                <li><a href="{{ url_for('students.reports_dashboard') }}" class="{% if request.endpoint == 'students.reports_dashboard' %}active{% endif %}"><i class="fas fa-chart-line"></i><span>Reports</span></a></li>
+
+                <li class="nav-section">Governance</li>
+                <li><a href="{{ url_for('students.audit_logs_view') }}" class="{% if request.endpoint == 'students.audit_logs_view' %}active{% endif %}"><i class="fas fa-clipboard-list"></i><span>Audit Logs</span></a></li>
+
+                <li class="nav-section">Preferences</li>
+                <li><a href="{{ url_for('settings.settings_page') }}" class="{% if request.endpoint == 'settings.settings_page' %}active{% endif %}"><i class="fas fa-gear"></i><span>Settings</span></a></li>
+                <li><a href="{{ url_for('auth.change_password') }}" class="{% if request.endpoint == 'auth.change_password' %}active{% endif %}"><i class="fas fa-key"></i><span>Change Password</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+                <div class="user-details">
+                    <strong>{{ current_user.full_name }}</strong>
+                    <small>{{ current_user.role|title }}</small>
+                </div>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Top navbar -->
+        <header class="top-bar">
+            <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+            <div class="top-bar-title">
+                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <div class="top-bar-actions">
+                <button type="button" class="top-link-btn" id="commandBarToggle" aria-label="Open command search" title="Quick command search (Ctrl+K)">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a href="{{ url_for('settings.settings_page') }}" class="top-link-btn" aria-label="Settings" title="Settings">
+                    <i class="fas fa-gear"></i>
+                </a>
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="top-bar-date"><i class="fas fa-calendar-alt"></i> {{ now().strftime('%d %b %Y') if now is defined else '2026' }}</span>
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ current_user.username }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages container-fluid">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <i class="fas {% if category == 'danger' %}fa-exclamation-circle{% elif category == 'success' %}fa-check-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+                <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <div class="command-bar" id="commandBar">
+        <div class="command-bar-panel">
+            <div class="command-bar-head">
+                <h3>Quick Command</h3>
+                <button type="button" id="commandBarClose" class="btn-icon" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="text" id="commandSearchInput" class="filter-input" placeholder="Type: students, register, reports, settings, recycle, dashboard">
+            <div id="commandSearchResults" class="command-results"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

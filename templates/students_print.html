@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List Print</title>
+    <style>
+        body { font-family: Inter, Arial, sans-serif; margin: 20px; color: #0f172a; }
+        h1 { margin: 0 0 8px 0; }
+        .meta { color: #475569; font-size: 13px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
+        th { background: #f1f5f9; text-transform: uppercase; font-size: 11px; }
+        .actions { margin-bottom: 12px; }
+        .btn { border: 1px solid #334155; padding: 8px 12px; border-radius: 8px; background: #fff; cursor: pointer; }
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 8mm; }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions no-print">
+        <button class="btn" onclick="window.print()">Print Students List</button>
+    </div>
+
+    <h1>Temzo Institute of Technology</h1>
+    <div class="meta">Students Register | Generated {{ now().strftime('%d %b %Y %H:%M') }}</div>
+    <div class="meta">
+        Filters — Search: {{ search or 'All' }}, Status: {{ status_filter or 'All' }}, Department: {{ dept_filter or 'All' }}, Workflow: {{ workflow_filter or 'All' }}, Include Archived: {{ 'Yes' if include_deleted else 'No' }}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Programme</th>
+                <th>Department</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Workflow</th>
+                <th>Net Cost (Leones)</th>
+                <th>Paid (Leones)</th>
+                <th>Outstanding (Leones)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.student_id }}</td>
+                <td>{{ s.first_name }} {{ s.middle_name or '' }} {{ s.last_name }}</td>
+                <td>{{ s.gender }}</td>
+                <td>{{ s.programme or '—' }}</td>
+                <td>{{ s.department or '—' }}</td>
+                <td>{{ s.phone }}</td>
+                <td>{{ s.status }}{% if s.deleted_at %} (Archived){% endif %}</td>
+                <td>{{ s.workflow_stage or 'Applied' }}</td>
+                <td>{{ '%.2f'|format(s.finance_full_cost or 0) }}</td>
+                <td>{{ '%.2f'|format(s.finance_amount_paid or 0) }}</td>
+                <td>{{ '%.2f'|format(s.finance_outstanding or 0) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="11">No students found for this filter.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

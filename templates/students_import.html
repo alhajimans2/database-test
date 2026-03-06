@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block title %}Import Students{% endblock %}
+{% block page_title %}Bulk Import Students{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header students-header">
+        <h3><i class="fas fa-file-import"></i> Import Students from CSV</h3>
+        <a href="{{ url_for('students.student_list') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="card-body">
+        <p class="text-muted" style="margin-bottom:.8rem;">
+            Required columns: <strong>first_name, last_name, date_of_birth (YYYY-MM-DD), gender, nationality, phone, address</strong>
+        </p>
+        <form method="POST" enctype="multipart/form-data" class="import-form">
+            <div class="form-grid" style="grid-template-columns: 1fr auto;">
+                <div class="form-group required">
+                    <label for="csv_file">CSV File</label>
+                    <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <div class="form-group" style="align-self:end;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Import</button>
+                </div>
+            </div>
+        </form>
+
+        {% if imported_count or report %}
+        <div style="margin-top:1rem;" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Imported: {{ imported_count }} | Failed: {{ report|length }}
+        </div>
+        {% endif %}
+
+        {% if report %}
+        <div class="table-responsive" style="margin-top:.8rem;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Error</th>
+                        <th>Row Preview</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in report %}
+                    <tr>
+                        <td>{{ item.line }}</td>
+                        <td><span class="badge badge-warning">{{ item.error }}</span></td>
+                        <td>{{ item.row }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

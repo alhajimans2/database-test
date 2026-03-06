@@ -1,0 +1,329 @@
+{% extends "layout.html" %}
+{% block title %}Edit – {{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block page_title %}Edit Student{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-edit"></i> Editing: {{ student.first_name }} {{ student.last_name }} ({{ student.student_id }})</h3>
+        <a href="{{ url_for('students.view_student', student_id=student.id) }}" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('students.edit_student', student_id=student.id) }}" enctype="multipart/form-data" id="studentForm" data-student-id="{{ student.id }}" class="edit-form">
+
+            <!-- Photo -->
+            <div class="photo-upload-area edit-photo">
+                <div class="photo-preview" id="photoPreview">
+                    {% if student.photo_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + student.photo_filename) }}" alt="Current Photo">
+                    {% else %}
+                    <i class="fas fa-camera"></i>
+                    <span>No Photo</span>
+                    {% endif %}
+                </div>
+                <input type="file" name="photo" id="photoInput" accept="image/*" hidden>
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('photoInput').click()">
+                    <i class="fas fa-upload"></i> Change Photo
+                </button>
+            </div>
+
+            <div class="edit-grid">
+                <!-- Personal -->
+                <fieldset class="edit-fieldset">
+                    <legend><i class="fas fa-user"></i> Personal Information</legend>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" value="{{ student.first_name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Middle Name</label>
+                            <input type="text" name="middle_name" value="{{ student.middle_name or '' }}">
+                        </div>
+                        <div class="form-group required">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" value="{{ student.last_name }}" required>
+                        </div>
+                        <div class="form-group required">
+                            <label>Date of Birth</label>
+                            <input type="date" name="date_of_birth" value="{{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else '' }}" required>
+                        </div>
+                        <div class="form-group required">
+                            <label>Gender</label>
+                            <select name="gender" required>
+                                <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group required">
+                            <label>Nationality</label>
+                            <input type="text" name="nationality" value="{{ student.nationality }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>National ID</label>
+                            <input type="text" name="national_id" value="{{ student.national_id or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select name="marital_status">
+                                <option value="">Select</option>
+                                {% for ms in ['Single','Married','Divorced','Widowed'] %}
+                                <option value="{{ ms }}" {% if student.marital_status == ms %}selected{% endif %}>{{ ms }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Religion</label>
+                            <input type="text" name="religion" value="{{ student.religion or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Group</label>
+                            <select name="blood_group">
+                                <option value="">Select</option>
+                                {% for bg in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+                                <option value="{{ bg }}" {% if student.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Disability</label>
+                            <textarea name="disability" rows="2">{{ student.disability or '' }}</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Contact -->
+                <fieldset class="edit-fieldset">
+                    <legend><i class="fas fa-address-book"></i> Contact Information</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ student.email or '' }}">
+                        </div>
+                        <div class="form-group required">
+                            <label>Phone</label>
+                            <input type="tel" name="phone" value="{{ student.phone }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Alt. Phone</label>
+                            <input type="tel" name="alt_phone" value="{{ student.alt_phone or '' }}">
+                        </div>
+                        <div class="form-group full-width required">
+                            <label>Address</label>
+                            <textarea name="address" rows="2" required>{{ student.address }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" name="city" value="{{ student.city or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Province</label>
+                            <input type="text" name="state_province" value="{{ student.state_province or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Postal Code</label>
+                            <input type="text" name="postal_code" value="{{ student.postal_code or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <input type="text" name="country" value="{{ student.country or '' }}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Academic -->
+                <fieldset class="edit-fieldset">
+                    <legend><i class="fas fa-graduation-cap"></i> Academic Information</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Programme</label>
+                            <select name="programme">
+                                <option value="">Select Programme</option>
+                                {% for prog in [
+                                    'Bachelor of Science in Computer Science',
+                                    'Bachelor of Science in Information Technology',
+                                    'Bachelor of Commerce',
+                                    'Bachelor of Business Administration',
+                                    'Bachelor of Engineering',
+                                    'Diploma in Information Technology',
+                                    'Diploma in Business Management',
+                                    'Diploma in Accounting',
+                                    'Certificate in Computer Studies',
+                                    'Certificate in Project Management',
+                                    'Master of Business Administration',
+                                    'Master of Science in Computer Science'
+                                ] %}
+                                <option value="{{ prog }}" {% if student.programme == prog %}selected{% endif %}>{{ prog }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <select name="department">
+                                <option value="">Select</option>
+                                {% for dept in ['Computer Science','Information Technology','Business Administration','Accounting & Finance','Engineering','Education','Social Sciences'] %}
+                                <option value="{{ dept }}" {% if student.department == dept %}selected{% endif %}>{{ dept }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Intake Year</label>
+                            <input type="number" name="intake_year" value="{{ student.intake_year or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Intake Semester</label>
+                            <select name="intake_semester">
+                                <option value="">Select</option>
+                                {% for sem in ['Semester 1','Semester 2','Summer'] %}
+                                <option value="{{ sem }}" {% if student.intake_semester == sem %}selected{% endif %}>{{ sem }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode of Study</label>
+                            <select name="mode_of_study">
+                                <option value="">Select</option>
+                                {% for m in ['Full-time','Part-time','Distance Learning','Online'] %}
+                                <option value="{{ m }}" {% if student.mode_of_study == m %}selected{% endif %}>{{ m }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status">
+                                {% for st in ['Active','Inactive','Graduated','Suspended','Deferred'] %}
+                                <option value="{{ st }}" {% if student.status == st %}selected{% endif %}>{{ st }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Workflow Stage</label>
+                            <select name="workflow_stage">
+                                {% for st in ['Applied','Screening','Interview','Approved','Registered','Active','Suspended','Graduated','Alumni'] %}
+                                <option value="{{ st }}" {% if (student.workflow_stage or 'Applied') == st %}selected{% endif %}>{{ st }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Emergency -->
+                <fieldset class="edit-fieldset">
+                    <legend><i class="fas fa-heartbeat"></i> Emergency Contact & Medical</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Contact Name</label>
+                            <input type="text" name="emergency_name" value="{{ student.emergency_name or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship</label>
+                            <input type="text" name="emergency_relationship" value="{{ student.emergency_relationship or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" name="emergency_phone" value="{{ student.emergency_phone or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="emergency_email" value="{{ student.emergency_email or '' }}">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <textarea name="emergency_address" rows="2">{{ student.emergency_address or '' }}</textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Medical Conditions</label>
+                            <textarea name="medical_conditions" rows="2">{{ student.medical_conditions or '' }}</textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Allergies</label>
+                            <textarea name="allergies" rows="2">{{ student.allergies or '' }}</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Finance -->
+                <fieldset class="edit-fieldset">
+                    <legend><i class="fas fa-coins"></i> Finance Breakdown (Leones)</legend>
+                    <h4 class="sub-heading">Institute Charges</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tuition Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_tuition_fee" id="finance_tuition_fee" value="{{ '%.2f'|format(student.finance_tuition_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Registration Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_registration_fee" id="finance_registration_fee" value="{{ '%.2f'|format(student.finance_registration_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Examination Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_exam_fee" id="finance_exam_fee" value="{{ '%.2f'|format(student.finance_exam_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Library & ICT Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_library_ict_fee" id="finance_library_ict_fee" value="{{ '%.2f'|format(student.finance_library_ict_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Lab / Practical Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_lab_practical_fee" id="finance_lab_practical_fee" value="{{ '%.2f'|format(student.finance_lab_practical_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Accommodation / Hostel Fee</label>
+                            <input type="number" step="0.01" min="0" name="finance_accommodation_fee" id="finance_accommodation_fee" value="{{ '%.2f'|format(student.finance_accommodation_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Miscellaneous Charges</label>
+                            <input type="number" step="0.01" min="0" name="finance_miscellaneous_fee" id="finance_miscellaneous_fee" value="{{ '%.2f'|format(student.finance_miscellaneous_fee or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Scholarship / Discount</label>
+                            <input type="number" step="0.01" min="0" name="finance_scholarship_discount" id="finance_scholarship_discount" value="{{ '%.2f'|format(student.finance_scholarship_discount or 0) }}" placeholder="Le 0.00">
+                        </div>
+                    </div>
+
+                    <h4 class="sub-heading">Payment Summary</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Net Programme Cost (Auto)</label>
+                            <input type="number" step="0.01" min="0" name="finance_full_cost" id="finance_full_cost" value="{{ '%.2f'|format(student.finance_full_cost or 0) }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Other Financial Commitments / Arrears</label>
+                            <input type="number" step="0.01" min="0" name="finance_other_commitments" id="finance_other_commitments" value="{{ '%.2f'|format(student.finance_other_commitments or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Paid</label>
+                            <input type="number" step="0.01" min="0" name="finance_amount_paid" id="finance_amount_paid" value="{{ '%.2f'|format(student.finance_amount_paid or 0) }}" placeholder="Le 0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Outstanding Balance (Auto)</label>
+                            <input type="number" step="0.01" min="0" name="finance_outstanding" id="finance_outstanding" value="{{ '%.2f'|format(student.finance_outstanding or 0) }}" readonly>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
+                <a href="{{ url_for('students.view_student', student_id=student.id) }}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('photoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            document.getElementById('photoPreview').innerHTML = '<img src="' + ev.target.result + '" alt="Preview">';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

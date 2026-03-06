@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - {{ student.student_id }}</title>
+    <style>
+        body { font-family: Inter, Arial, sans-serif; margin: 24px; color: #0f172a; }
+        h1, h2, h3, h4 { margin: 0 0 10px 0; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .meta { color: #475569; font-size: 13px; }
+        .section { border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .section h3 { font-size: 16px; margin-bottom: 8px; }
+        .sub { margin-top: 10px; }
+        .sub h4 { font-size: 14px; color: #334155; margin-bottom: 6px; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; }
+        .item label { display: block; font-size: 12px; color: #64748b; margin-bottom: 2px; }
+        .item span { font-weight: 600; }
+        .timeline-item { border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+        .timeline-meta { color: #475569; font-size: 12px; margin-top: 2px; }
+        .actions { margin-bottom: 14px; }
+        .btn { border: 1px solid #334155; padding: 8px 12px; border-radius: 8px; background: #fff; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+        th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; text-transform: uppercase; font-size: 11px; color: #475569; }
+        .right { text-align: right; }
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 10mm; }
+            .section, .timeline-item, table { break-inside: avoid; }
+            .page-break { break-before: page; page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions no-print">
+        <button class="btn" onclick="window.print()">Print</button>
+    </div>
+
+    <div class="header">
+        <div>
+            <h1>Temzo Institute of Technology</h1>
+            <div class="meta">Student Profile Record (Full)</div>
+        </div>
+        <div class="meta">Generated: {{ now().strftime('%d %b %Y %H:%M') }}</div>
+    </div>
+
+    <div class="section">
+        <h3>{{ student.first_name }} {{ student.middle_name or '' }} {{ student.last_name }}</h3>
+        <div class="meta">Student ID: {{ student.student_id }} | Status: {{ student.status }} | Workflow: {{ student.workflow_stage or 'Applied' }}</div>
+    </div>
+
+    <div class="section">
+        <h3>Personal Information</h3>
+        <div class="grid">
+            <div class="item"><label>First Name</label><span>{{ student.first_name }}</span></div>
+            <div class="item"><label>Middle Name</label><span>{{ student.middle_name or '—' }}</span></div>
+            <div class="item"><label>Last Name</label><span>{{ student.last_name }}</span></div>
+            <div class="item"><label>Date of Birth</label><span>{{ student.date_of_birth.strftime('%d %B %Y') if student.date_of_birth else '—' }}</span></div>
+            <div class="item"><label>Gender</label><span>{{ student.gender }}</span></div>
+            <div class="item"><label>Nationality</label><span>{{ student.nationality }}</span></div>
+            <div class="item"><label>National ID</label><span>{{ student.national_id or '—' }}</span></div>
+            <div class="item"><label>Marital Status</label><span>{{ student.marital_status or '—' }}</span></div>
+            <div class="item"><label>Religion</label><span>{{ student.religion or '—' }}</span></div>
+            <div class="item"><label>Blood Group</label><span>{{ student.blood_group or '—' }}</span></div>
+            <div class="item"><label>Disability</label><span>{{ student.disability or 'None' }}</span></div>
+        </div>
+    </div>
+
+    <div class="section page-break">
+        <h3>Contact Information</h3>
+        <div class="grid">
+            <div class="item"><label>Phone</label><span>{{ student.phone }}</span></div>
+            <div class="item"><label>Alternative Phone</label><span>{{ student.alt_phone or '—' }}</span></div>
+            <div class="item"><label>Email</label><span>{{ student.email or '—' }}</span></div>
+            <div class="item"><label>Address</label><span>{{ student.address }}</span></div>
+            <div class="item"><label>City</label><span>{{ student.city or '—' }}</span></div>
+            <div class="item"><label>Province</label><span>{{ student.state_province or '—' }}</span></div>
+            <div class="item"><label>Postal Code</label><span>{{ student.postal_code or '—' }}</span></div>
+            <div class="item"><label>Country</label><span>{{ student.country or '—' }}</span></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Academic</h3>
+        <div class="grid">
+            <div class="item"><label>Programme</label><span>{{ student.programme or '—' }}</span></div>
+            <div class="item"><label>Department</label><span>{{ student.department or '—' }}</span></div>
+            <div class="item"><label>Intake Year</label><span>{{ student.intake_year or '—' }}</span></div>
+            <div class="item"><label>Intake Semester</label><span>{{ student.intake_semester or '—' }}</span></div>
+            <div class="item"><label>Mode of Study</label><span>{{ student.mode_of_study or '—' }}</span></div>
+        </div>
+    </div>
+
+    <div class="section page-break">
+        <h3>Education History</h3>
+        {% if student.education_history %}
+            {% for edu in student.education_history %}
+            <div class="timeline-item">
+                <strong>{{ edu.institution_name }}</strong>
+                <div class="timeline-meta">{{ edu.level or '—' }} | {{ edu.qualification or '—' }} | {{ edu.field_of_study or '—' }}</div>
+                <div class="timeline-meta">{{ edu.start_date.strftime('%b %Y') if edu.start_date else '—' }} to {{ edu.end_date.strftime('%b %Y') if edu.end_date else 'Present' }}</div>
+                <div class="timeline-meta">Grade: {{ edu.grade or '—' }} | Country: {{ edu.country or '—' }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="meta">No education history recorded.</div>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Work Experience</h3>
+        {% if student.work_experience %}
+            {% for work in student.work_experience %}
+            <div class="timeline-item">
+                <strong>{{ work.job_title or 'Position' }} at {{ work.company_name }}</strong>
+                <div class="timeline-meta">{{ work.employment_type or '—' }} | {{ work.country or '—' }}</div>
+                <div class="timeline-meta">{{ work.start_date.strftime('%b %Y') if work.start_date else '—' }} to {{ work.end_date.strftime('%b %Y') if work.end_date else 'Present' }}</div>
+                <div class="timeline-meta">{{ work.responsibilities or 'No responsibilities provided.' }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="meta">No work experience recorded.</div>
+        {% endif %}
+    </div>
+
+    <div class="section page-break">
+        <h3>Parent / Guardian Details</h3>
+        {% if student.parents %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Relationship</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Occupation</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in student.parents %}
+                <tr>
+                    <td>{{ p.relationship }}</td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.phone or '—' }}</td>
+                    <td>{{ p.email or '—' }}</td>
+                    <td>{{ p.occupation or '—' }}</td>
+                    <td>{{ p.address or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="meta">No parent / guardian details recorded.</div>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Emergency Contact & Medical</h3>
+        <div class="grid">
+            <div class="item"><label>Contact Name</label><span>{{ student.emergency_name or '—' }}</span></div>
+            <div class="item"><label>Relationship</label><span>{{ student.emergency_relationship or '—' }}</span></div>
+            <div class="item"><label>Phone</label><span>{{ student.emergency_phone or '—' }}</span></div>
+            <div class="item"><label>Email</label><span>{{ student.emergency_email or '—' }}</span></div>
+            <div class="item"><label>Address</label><span>{{ student.emergency_address or '—' }}</span></div>
+            <div class="item"><label>Medical Conditions</label><span>{{ student.medical_conditions or 'None' }}</span></div>
+            <div class="item"><label>Allergies</label><span>{{ student.allergies or 'None' }}</span></div>
+        </div>
+    </div>
+
+    <div class="section page-break">
+        <h3>Finance Breakdown</h3>
+        <div class="sub">
+            <h4>Institute Charges</h4>
+            <table>
+                <thead><tr><th>Description</th><th class="right">Amount (Le)</th></tr></thead>
+                <tbody>
+                    <tr><td>Tuition Fee</td><td class="right">{{ '%.2f'|format(student.finance_tuition_fee or 0) }}</td></tr>
+                    <tr><td>Registration Fee</td><td class="right">{{ '%.2f'|format(student.finance_registration_fee or 0) }}</td></tr>
+                    <tr><td>Examination Fee</td><td class="right">{{ '%.2f'|format(student.finance_exam_fee or 0) }}</td></tr>
+                    <tr><td>Library & ICT Fee</td><td class="right">{{ '%.2f'|format(student.finance_library_ict_fee or 0) }}</td></tr>
+                    <tr><td>Lab / Practical Fee</td><td class="right">{{ '%.2f'|format(student.finance_lab_practical_fee or 0) }}</td></tr>
+                    <tr><td>Accommodation / Hostel Fee</td><td class="right">{{ '%.2f'|format(student.finance_accommodation_fee or 0) }}</td></tr>
+                    <tr><td>Miscellaneous Charges</td><td class="right">{{ '%.2f'|format(student.finance_miscellaneous_fee or 0) }}</td></tr>
+                    <tr><td>Scholarship / Discount</td><td class="right">-{{ '%.2f'|format(student.finance_scholarship_discount or 0) }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sub">
+            <h4>Payment Summary</h4>
+            <table>
+                <thead><tr><th>Description</th><th class="right">Amount (Le)</th></tr></thead>
+                <tbody>
+                    <tr><td>Net Programme Cost</td><td class="right">{{ '%.2f'|format(student.finance_full_cost or 0) }}</td></tr>
+                    <tr><td>Other Commitments / Arrears</td><td class="right">{{ '%.2f'|format(student.finance_other_commitments or 0) }}</td></tr>
+                    <tr><td>Amount Paid</td><td class="right">{{ '%.2f'|format(student.finance_amount_paid or 0) }}</td></tr>
+                    <tr><td><strong>Outstanding Balance</strong></td><td class="right"><strong>{{ '%.2f'|format(student.finance_outstanding or 0) }}</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sub">
+            <h4>Payment Ledger</h4>
+            {% if student.payments %}
+            <table>
+                <thead><tr><th>Receipt</th><th>Date</th><th class="right">Amount (Le)</th><th>Method</th><th>Notes</th></tr></thead>
+                <tbody>
+                    {% for p in student.payments|sort(attribute='paid_at', reverse=True) %}
+                    <tr>
+                        <td>{{ p.receipt_number }}</td>
+                        <td>{{ p.paid_at.strftime('%d %b %Y %H:%M') if p.paid_at else '—' }}</td>
+                        <td class="right">{{ '%.2f'|format(p.amount or 0) }}</td>
+                        <td>{{ p.payment_method or '—' }}</td>
+                        <td>{{ p.notes or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="meta">No payments recorded.</div>
+            {% endif %}
+        </div>
+        <div class="sub">
+            <h4>Installments</h4>
+            {% if student.installments %}
+            <table>
+                <thead><tr><th>Due Date</th><th class="right">Amount (Le)</th><th>Status</th><th>Notes</th></tr></thead>
+                <tbody>
+                    {% for inst in student.installments|sort(attribute='due_date') %}
+                    <tr>
+                        <td>{{ inst.due_date.strftime('%d %b %Y') if inst.due_date else '—' }}</td>
+                        <td class="right">{{ '%.2f'|format(inst.amount or 0) }}</td>
+                        <td>{{ 'Paid' if inst.is_paid else 'Pending' }}</td>
+                        <td>{{ inst.notes or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="meta">No installments scheduled.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section page-break">
+        <h3>Workflow & Stage History</h3>
+        <div class="grid">
+            <div class="item"><label>Current Stage</label><span>{{ student.workflow_stage or 'Applied' }}</span></div>
+            <div class="item"><label>Stage Updated</label><span>{{ student.stage_updated_at.strftime('%d %b %Y %H:%M') if student.stage_updated_at else '—' }}</span></div>
+            <div class="item"><label>Approved At</label><span>{{ student.approved_at.strftime('%d %b %Y %H:%M') if student.approved_at else '—' }}</span></div>
+        </div>
+        <div class="sub">
+            <h4>Stage History</h4>
+            {% if student.stage_history %}
+            <table>
+                <thead><tr><th>When</th><th>From</th><th>To</th><th>Notes</th></tr></thead>
+                <tbody>
+                    {% for h in student.stage_history|sort(attribute='changed_at', reverse=True) %}
+                    <tr>
+                        <td>{{ h.changed_at.strftime('%d %b %Y %H:%M') if h.changed_at else '—' }}</td>
+                        <td>{{ h.from_stage or '—' }}</td>
+                        <td>{{ h.to_stage }}</td>
+                        <td>{{ h.notes or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="meta">No stage transitions recorded.</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Error{% endblock %}
+{% block page_title %}Something went wrong{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state" style="padding:2rem;">
+            <i class="fas fa-triangle-exclamation"></i>
+            <h3>{{ title or 'Request could not be completed' }}</h3>
+            <p>{{ message or 'An unexpected error occurred. Please try again.' }}</p>
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary"><i class="fas fa-home"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

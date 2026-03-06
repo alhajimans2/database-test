@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card stat-primary"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><h3>{{ total_students }}</h3><p>Total Students</p></div></div>
+    <div class="stat-card stat-warning"><div class="stat-icon"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-info"><h3>{{ defaulters|length }}</h3><p>Defaulters</p></div></div>
+    <div class="stat-card stat-success"><div class="stat-icon"><i class="fas fa-hand-holding-dollar"></i></div><div class="stat-info"><h3>Leones {{ '%.2f'|format(total_collected or 0) }}</h3><p>Total Collected</p></div></div>
+    <div class="stat-card stat-accent"><div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div><div class="stat-info"><h3>Leones {{ '%.2f'|format(total_outstanding or 0) }}</h3><p>Total Outstanding</p></div></div>
+</div>
+
+<div class="card" style="margin-top:1rem;">
+    <div class="card-header students-header">
+        <h3><i class="fas fa-user-clock"></i> Fee Defaulters</h3>
+        <a href="{{ url_for('students.export_defaulters_csv') }}" class="btn btn-outline"><i class="fas fa-file-csv"></i> Download CSV</a>
+    </div>
+    <div class="card-body">
+        {% if defaulters %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead><tr><th>Student</th><th>ID</th><th>Programme</th><th>Department</th><th>Outstanding</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for s in defaulters|sort(attribute='finance_outstanding', reverse=True) %}
+                    <tr>
+                        <td>{{ s.full_name }}</td>
+                        <td>{{ s.student_id }}</td>
+                        <td>{{ s.programme or '—' }}</td>
+                        <td>{{ s.department or '—' }}</td>
+                        <td>Leones {{ '%.2f'|format(s.finance_outstanding or 0) }}</td>
+                        <td><a href="{{ url_for('students.view_student', student_id=s.id) }}" class="btn btn-outline btn-sm">Open</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-circle-check"></i><h3>No Defaulters</h3><p>All students are currently settled.</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="charts-grid" style="margin-top:1rem;">
+    <div class="chart-card">
+        <div class="card-header"><h3><i class="fas fa-hourglass-half"></i> Aging Snapshot</h3></div>
+        <div class="card-body">
+            <ul class="simple-list">
+                <li><strong>0-30 days:</strong> {{ aging_buckets['0-30'] }}</li>
+                <li><strong>31-60 days:</strong> {{ aging_buckets['31-60'] }}</li>
+                <li><strong>61-90 days:</strong> {{ aging_buckets['61-90'] }}</li>
+                <li><strong>90+ days:</strong> {{ aging_buckets['90+'] }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="chart-card">
+        <div class="card-header"><h3><i class="fas fa-building"></i> Department Snapshot</h3></div>
+        <div class="card-body">
+            <ul class="simple-list">
+                {% for row in department_snapshot %}
+                <li><strong>{{ row[0] or 'Unassigned' }}:</strong> {{ row[1] }} students &middot; Leones {{ '%.2f'|format(row[2] or 0) }} outstanding</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:1rem;">
+    <div class="card-header"><h3><i class="fas fa-chart-line"></i> Enrollment Trend</h3></div>
+    <div class="card-body">
+        {% if monthly_rows %}
+        <ul class="simple-list">
+            {% for month, count in monthly_rows %}
+            <li><strong>{{ month }}:</strong> {{ count }} admissions</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">No enrollment trend data available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

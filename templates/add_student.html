@@ -1,0 +1,597 @@
+{% extends "layout.html" %}
+{% block title %}Register Student{% endblock %}
+{% block page_title %}Register New Student{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('students.add_student') }}" enctype="multipart/form-data" id="studentForm" data-student-id="new" class="student-form">
+
+    <!-- Progress Steps -->
+    <div class="form-progress">
+        <div class="progress-step active" data-step="1"><span>1</span> Personal</div>
+        <div class="progress-step" data-step="2"><span>2</span> Contact</div>
+        <div class="progress-step" data-step="3"><span>3</span> Academic</div>
+        <div class="progress-step" data-step="4"><span>4</span> Education</div>
+        <div class="progress-step" data-step="5"><span>5</span> Work</div>
+        <div class="progress-step" data-step="6"><span>6</span> Parents</div>
+        <div class="progress-step" data-step="7"><span>7</span> Emergency</div>
+        <div class="progress-step" data-step="8"><span>8</span> Finance</div>
+    </div>
+
+    <!-- STEP 1: Personal Information -->
+    <div class="form-section active" id="step-1">
+        <div class="section-header">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+        </div>
+        <div class="section-body">
+            <!-- Passport Photo -->
+            <div class="photo-upload-area">
+                <div class="photo-preview" id="photoPreview">
+                    <i class="fas fa-camera"></i>
+                    <span>Passport Photo</span>
+                </div>
+                <input type="file" name="photo" id="photoInput" accept="image/*" hidden>
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('photoInput').click()">
+                    <i class="fas fa-upload"></i> Upload Photo
+                </button>
+                <small>Max 5MB. JPG, PNG, GIF</small>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group required">
+                    <label for="first_name">First Name</label>
+                    <input type="text" name="first_name" id="first_name" required placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label for="middle_name">Middle Name</label>
+                    <input type="text" name="middle_name" id="middle_name" placeholder="Enter middle name">
+                </div>
+                <div class="form-group required">
+                    <label for="last_name">Last Name / Surname</label>
+                    <input type="text" name="last_name" id="last_name" required placeholder="Enter surname">
+                </div>
+                <div class="form-group required">
+                    <label for="date_of_birth">Date of Birth</label>
+                    <input type="date" name="date_of_birth" id="date_of_birth" required>
+                </div>
+                <div class="form-group required">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group required">
+                    <label for="nationality">Nationality</label>
+                    <input type="text" name="nationality" id="nationality" required placeholder="e.g. Sierra Leonean">
+                </div>
+                <div class="form-group">
+                    <label for="national_id">National ID Number</label>
+                    <input type="text" name="national_id" id="national_id" placeholder="e.g. UVWXY9ZA">
+                </div>
+                <div class="form-group">
+                    <label for="marital_status">Marital Status</label>
+                    <select name="marital_status" id="marital_status">
+                        <option value="">Select</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widowed">Widowed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="religion">Religion</label>
+                    <input type="text" name="religion" id="religion" placeholder="e.g. Christianity">
+                </div>
+                <div class="form-group">
+                    <label for="blood_group">Blood Group</label>
+                    <select name="blood_group" id="blood_group">
+                        <option value="">Select</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label for="disability">Disability (if any)</label>
+                    <textarea name="disability" id="disability" rows="2" placeholder="Describe any disability or leave blank"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-primary btn-next" data-next="2">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 2: Contact Information -->
+    <div class="form-section" id="step-2">
+        <div class="section-header">
+            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+        </div>
+        <div class="section-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" id="email" placeholder="student@example.com">
+                </div>
+                <div class="form-group required">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" name="phone" id="phone" required placeholder="+232 77 123 4567">
+                </div>
+                <div class="form-group">
+                    <label for="alt_phone">Alternative Phone</label>
+                    <input type="tel" name="alt_phone" id="alt_phone" placeholder="+232 71 234 5678">
+                </div>
+                <div class="form-group full-width required">
+                    <label for="address">Residential Address</label>
+                    <textarea name="address" id="address" rows="2" required placeholder="Full residential address"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="city">City / Town</label>
+                    <input type="text" name="city" id="city" placeholder="e.g. Freetown">
+                </div>
+                <div class="form-group">
+                    <label for="state_province">State / Province</label>
+                    <input type="text" name="state_province" id="state_province" placeholder="e.g. Western Area">
+                </div>
+                <div class="form-group">
+                    <label for="postal_code">Postal Code</label>
+                    <input type="text" name="postal_code" id="postal_code" placeholder="e.g. 00263">
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" name="country" id="country" placeholder="e.g. Sierra Leone">
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="1"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="3">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 3: Academic Information -->
+    <div class="form-section" id="step-3">
+        <div class="section-header">
+            <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+        </div>
+        <div class="section-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="programme">Programme</label>
+                    <select name="programme" id="programme">
+                        <option value="">Select Programme</option>
+                        <option value="Bachelor of Science in Computer Science">BSc Computer Science</option>
+                        <option value="Bachelor of Science in Information Technology">BSc Information Technology</option>
+                        <option value="Bachelor of Commerce">Bachelor of Commerce</option>
+                        <option value="Bachelor of Business Administration">BBA</option>
+                        <option value="Bachelor of Engineering">Bachelor of Engineering</option>
+                        <option value="Diploma in Information Technology">Diploma in IT</option>
+                        <option value="Diploma in Business Management">Diploma in Business Management</option>
+                        <option value="Diploma in Accounting">Diploma in Accounting</option>
+                        <option value="Certificate in Computer Studies">Certificate in Computer Studies</option>
+                        <option value="Certificate in Project Management">Certificate in Project Management</option>
+                        <option value="Master of Business Administration">MBA</option>
+                        <option value="Master of Science in Computer Science">MSc Computer Science</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select name="department" id="department">
+                        <option value="">Select Department</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Business Administration">Business Administration</option>
+                        <option value="Accounting & Finance">Accounting & Finance</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Education">Education</option>
+                        <option value="Social Sciences">Social Sciences</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="intake_year">Intake Year</label>
+                    <input type="number" name="intake_year" id="intake_year" value="2026" min="2000" max="2040">
+                </div>
+                <div class="form-group">
+                    <label for="intake_semester">Intake Semester</label>
+                    <select name="intake_semester" id="intake_semester">
+                        <option value="">Select</option>
+                        <option value="Semester 1">Semester 1</option>
+                        <option value="Semester 2">Semester 2</option>
+                        <option value="Summer">Summer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mode_of_study">Mode of Study</label>
+                    <select name="mode_of_study" id="mode_of_study">
+                        <option value="">Select</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Distance Learning">Distance Learning</option>
+                        <option value="Online">Online</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="2"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="4">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 4: Education History -->
+    <div class="form-section" id="step-4">
+        <div class="section-header">
+            <h3><i class="fas fa-school"></i> Education History</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addEducationRow()"><i class="fas fa-plus"></i> Add More</button>
+        </div>
+        <div class="section-body" id="educationRows">
+            <div class="dynamic-row education-row">
+                <div class="row-header">
+                    <h4>Education Record #1</h4>
+                    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Institution Name</label>
+                        <input type="text" name="edu_institution[]" placeholder="e.g. Benevolent Islamic Sec. Sch.">
+                    </div>
+                    <div class="form-group">
+                        <label>Level</label>
+                        <select name="edu_level[]">
+                            <option value="">Select Level</option>
+                            <option value="Primary">Primary</option>
+                            <option value="O-Level">O-Level (Secondary)</option>
+                            <option value="A-Level">A-Level</option>
+                            <option value="Certificate">Certificate</option>
+                            <option value="Diploma">Diploma</option>
+                            <option value="Higher National Diploma">Higher National Diploma</option>
+                            <option value="Bachelor's Degree">Bachelor's Degree</option>
+                            <option value="Master's Degree">Master's Degree</option>
+                            <option value="Doctorate">Doctorate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Qualification Obtained</label>
+                        <input type="text" name="edu_qualification[]" placeholder="e.g. O-Level Certificate">
+                    </div>
+                    <div class="form-group">
+                        <label>Field of Study</label>
+                        <input type="text" name="edu_field[]" placeholder="e.g. Sciences">
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="edu_start[]">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="edu_end[]">
+                    </div>
+                    <div class="form-group">
+                        <label>Grade / GPA</label>
+                        <input type="text" name="edu_grade[]" placeholder="e.g. 10 Points / 3.5 GPA">
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" name="edu_country[]" placeholder="Country">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="3"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="5">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 5: Work Experience -->
+    <div class="form-section" id="step-5">
+        <div class="section-header">
+            <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addWorkRow()"><i class="fas fa-plus"></i> Add More</button>
+        </div>
+        <div class="section-body" id="workRows">
+            <div class="dynamic-row work-row">
+                <div class="row-header">
+                    <h4>Work Record #1</h4>
+                    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Company / Organisation</label>
+                        <input type="text" name="work_company[]" placeholder="Company name">
+                    </div>
+                    <div class="form-group">
+                        <label>Job Title / Position</label>
+                        <input type="text" name="work_title[]" placeholder="e.g. Junior Developer">
+                    </div>
+                    <div class="form-group">
+                        <label>Employment Type</label>
+                        <select name="work_type[]">
+                            <option value="">Select</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Volunteer">Volunteer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="work_start[]">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="work_end[]">
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" name="work_country[]" value="Zimbabwe" placeholder="Country">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Responsibilities / Duties</label>
+                        <textarea name="work_responsibilities[]" rows="2" placeholder="Describe your responsibilities"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="4"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="6">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 6: Parents / Guardians -->
+    <div class="form-section" id="step-6">
+        <div class="section-header">
+            <h3><i class="fas fa-users"></i> Parent / Guardian Details</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addParentRow()"><i class="fas fa-plus"></i> Add More</button>
+        </div>
+        <div class="section-body" id="parentRows">
+            <!-- Father -->
+            <div class="dynamic-row parent-row">
+                <div class="row-header">
+                    <h4>Parent / Guardian #1</h4>
+                    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <select name="parent_relationship[]">
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Guardian">Guardian</option>
+                            <option value="Sponsor">Sponsor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="parent_first_name[]" placeholder="First name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="parent_last_name[]" placeholder="Surname">
+                    </div>
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input type="text" name="parent_occupation[]" placeholder="e.g. Teacher">
+                    </div>
+                    <div class="form-group">
+                        <label>Employer</label>
+                        <input type="text" name="parent_employer[]" placeholder="Company / Organisation">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="parent_phone[]" placeholder="+263 77 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="parent_email[]" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>National ID</label>
+                        <input type="text" name="parent_national_id[]" placeholder="ID Number">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <textarea name="parent_address[]" rows="2" placeholder="Full address"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- Mother -->
+            <div class="dynamic-row parent-row">
+                <div class="row-header">
+                    <h4>Parent / Guardian #2</h4>
+                    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <select name="parent_relationship[]">
+                            <option value="Father">Father</option>
+                            <option value="Mother" selected>Mother</option>
+                            <option value="Guardian">Guardian</option>
+                            <option value="Sponsor">Sponsor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="parent_first_name[]" placeholder="First name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="parent_last_name[]" placeholder="Surname">
+                    </div>
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input type="text" name="parent_occupation[]" placeholder="e.g. Nurse">
+                    </div>
+                    <div class="form-group">
+                        <label>Employer</label>
+                        <input type="text" name="parent_employer[]" placeholder="Company / Organisation">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="parent_phone[]" placeholder="+263 77 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="parent_email[]" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>National ID</label>
+                        <input type="text" name="parent_national_id[]" placeholder="ID Number">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <textarea name="parent_address[]" rows="2" placeholder="Full address"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="5"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="7">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 7: Emergency & Medical -->
+    <div class="form-section" id="step-7">
+        <div class="section-header">
+            <h3><i class="fas fa-heartbeat"></i> Emergency Contact & Medical Info</h3>
+        </div>
+        <div class="section-body">
+            <h4 class="sub-heading">Emergency Contact</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="emergency_name">Contact Person Name</label>
+                    <input type="text" name="emergency_name" id="emergency_name" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label for="emergency_relationship">Relationship</label>
+                    <input type="text" name="emergency_relationship" id="emergency_relationship" placeholder="e.g. Uncle">
+                </div>
+                <div class="form-group">
+                    <label for="emergency_phone">Phone Number</label>
+                    <input type="tel" name="emergency_phone" id="emergency_phone" placeholder="+263 77 123 4567">
+                </div>
+                <div class="form-group">
+                    <label for="emergency_email">Email</label>
+                    <input type="email" name="emergency_email" id="emergency_email" placeholder="email@example.com">
+                </div>
+                <div class="form-group full-width">
+                    <label for="emergency_address">Address</label>
+                    <textarea name="emergency_address" id="emergency_address" rows="2" placeholder="Full address"></textarea>
+                </div>
+            </div>
+
+            <h4 class="sub-heading">Medical Information</h4>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="medical_conditions">Medical Conditions</label>
+                    <textarea name="medical_conditions" id="medical_conditions" rows="2" placeholder="List any medical conditions or write 'None'"></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="allergies">Allergies</label>
+                    <textarea name="allergies" id="allergies" rows="2" placeholder="List any allergies or write 'None'"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="6"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="button" class="btn btn-primary btn-next" data-next="8">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 8: Finance -->
+    <div class="form-section" id="step-8">
+        <div class="section-header">
+            <h3><i class="fas fa-coins"></i> Finance Breakdown (Leones)</h3>
+        </div>
+        <div class="section-body">
+            <h4 class="sub-heading">Institute Charges</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="finance_tuition_fee">Tuition Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_tuition_fee" id="finance_tuition_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_registration_fee">Registration Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_registration_fee" id="finance_registration_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_exam_fee">Examination Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_exam_fee" id="finance_exam_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_library_ict_fee">Library & ICT Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_library_ict_fee" id="finance_library_ict_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_lab_practical_fee">Lab / Practical Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_lab_practical_fee" id="finance_lab_practical_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_accommodation_fee">Accommodation / Hostel Fee</label>
+                    <input type="number" step="0.01" min="0" name="finance_accommodation_fee" id="finance_accommodation_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_miscellaneous_fee">Miscellaneous Charges</label>
+                    <input type="number" step="0.01" min="0" name="finance_miscellaneous_fee" id="finance_miscellaneous_fee" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_scholarship_discount">Scholarship / Discount</label>
+                    <input type="number" step="0.01" min="0" name="finance_scholarship_discount" id="finance_scholarship_discount" value="0" placeholder="Le 0.00">
+                </div>
+            </div>
+
+            <h4 class="sub-heading">Payment Summary</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="finance_full_cost">Net Programme Cost (Auto)</label>
+                    <input type="number" step="0.01" min="0" name="finance_full_cost" id="finance_full_cost" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="finance_other_commitments">Other Commitments / Arrears</label>
+                    <input type="number" step="0.01" min="0" name="finance_other_commitments" id="finance_other_commitments" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_amount_paid">Amount Paid</label>
+                    <input type="number" step="0.01" min="0" name="finance_amount_paid" id="finance_amount_paid" value="0" placeholder="Le 0.00">
+                </div>
+                <div class="form-group">
+                    <label for="finance_outstanding">Outstanding Balance (Auto)</label>
+                    <input type="number" step="0.01" min="0" name="finance_outstanding" id="finance_outstanding" value="0" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="section-footer">
+            <button type="button" class="btn btn-secondary btn-prev" data-prev="7"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Register Student</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Photo preview
+document.getElementById('photoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const preview = document.getElementById('photoPreview');
+            preview.innerHTML = '<img src="' + ev.target.result + '" alt="Preview">';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

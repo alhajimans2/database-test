@@ -1,0 +1,233 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card stat-primary">
+        <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="stat-info">
+            <h3><span class="stat-counter" data-target="{{ total_students }}">{{ total_students }}</span></h3>
+            <p>Total Students</p>
+        </div>
+    </div>
+    <div class="stat-card stat-success">
+        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+        <div class="stat-info">
+            <h3><span class="stat-counter" data-target="{{ active_students }}">{{ active_students }}</span></h3>
+            <p>Active Students</p>
+        </div>
+    </div>
+    <div class="stat-card stat-info">
+        <div class="stat-icon"><i class="fas fa-mars"></i></div>
+        <div class="stat-info">
+            <h3><span class="stat-counter" data-target="{{ male_students }}">{{ male_students }}</span></h3>
+            <p>Male Students</p>
+        </div>
+    </div>
+    <div class="stat-card stat-warning">
+        <div class="stat-icon"><i class="fas fa-venus"></i></div>
+        <div class="stat-info">
+            <h3><span class="stat-counter" data-target="{{ female_students }}">{{ female_students }}</span></h3>
+            <p>Female Students</p>
+        </div>
+    </div>
+    <div class="stat-card stat-accent">
+        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+        <div class="stat-info">
+            <h3><span class="stat-counter" data-target="{{ average_completeness }}" data-suffix="%">{{ average_completeness }}%</span></h3>
+            <p>Avg. Profile Completeness</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-pie"></i> Gender Distribution</h3>
+        </div>
+        <div class="card-body chart-container">
+            <canvas id="genderChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-bar"></i> Department Distribution</h3>
+        </div>
+        <div class="card-body chart-container">
+            <canvas id="deptChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Trend Row -->
+<div class="charts-grid single-chart-row">
+    <div class="chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-line"></i> Monthly Admissions Trend</h3>
+        </div>
+        <div class="card-body chart-container">
+            <canvas id="admissionTrendChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions + Recent Students -->
+<div class="dashboard-bottom-grid">
+    <!-- Quick Actions -->
+    <div class="card quick-actions-card">
+        <div class="card-header">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <a href="{{ url_for('students.add_student') }}" class="quick-action-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>Register New Student</span>
+            </a>
+            <a href="{{ url_for('students.student_list') }}" class="quick-action-btn">
+                <i class="fas fa-list"></i>
+                <span>View All Students</span>
+            </a>
+            <a href="{{ url_for('students.reports_dashboard') }}" class="quick-action-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>Open Reports Dashboard</span>
+            </a>
+            <a href="{{ url_for('students.recycle_bin') }}" class="quick-action-btn">
+                <i class="fas fa-recycle"></i>
+                <span>Manage Recycle Bin</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Students -->
+    <div class="card recent-students-card">
+        <div class="card-header">
+            <h3><i class="fas fa-clock"></i> Recently Registered</h3>
+            <a href="{{ url_for('students.student_list') }}" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="card-body">
+            {% if recent_students %}
+            <div class="recent-students-list">
+                {% for s in recent_students %}
+                <a href="{{ url_for('students.view_student', student_id=s.id) }}" class="recent-student-item">
+                    <div class="student-avatar-sm">
+                        {% if s.photo_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + s.photo_filename) }}" alt="">
+                        {% else %}
+                        <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="student-brief">
+                        <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                        <small>{{ s.student_id }} &middot; {{ s.programme or 'N/A' }}</small>
+                    </div>
+                    <span class="badge badge-{{ 'success' if s.status == 'Active' else 'secondary' }}">{{ s.status }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No students registered yet.</p>
+                <a href="{{ url_for('students.add_student') }}" class="btn btn-primary btn-sm">Register First Student</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gender Chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                data: [{{ male_students }}, {{ female_students }}],
+                backgroundColor: ['#4f8cf7', '#f75f8c'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Department Chart
+    const deptLabels = [{% for d in departments %}'{{ d[0] or "Unassigned" }}',{% endfor %}];
+    const deptData = [{% for d in departments %}{{ d[1] }},{% endfor %}];
+    const deptColors = ['#4f8cf7','#34d399','#f59e0b','#f75f8c','#a78bfa','#fb923c','#22d3ee','#e879f9'];
+
+    const deptCtx = document.getElementById('deptChart').getContext('2d');
+    new Chart(deptCtx, {
+        type: 'bar',
+        data: {
+            labels: deptLabels,
+            datasets: [{
+                label: 'Students',
+                data: deptData,
+                backgroundColor: deptColors.slice(0, deptLabels.length),
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Admissions Trend Chart
+    const trendLabels = [{% for label in monthly_labels %}'{{ label }}',{% endfor %}];
+    const trendData = [{% for count in monthly_admissions %}{{ count }},{% endfor %}];
+    const trendCtx = document.getElementById('admissionTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Admissions',
+                data: trendData,
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79,70,229,0.12)',
+                fill: true,
+                tension: 0.35,
+                pointRadius: 4,
+                pointBackgroundColor: '#4f46e5'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

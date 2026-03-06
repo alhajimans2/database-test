@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}Audit Logs{% endblock %}
+{% block page_title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3><i class="fas fa-clipboard-list"></i> System Audit Trail</h3></div>
+    <div class="card-body">
+        {% if logs %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead><tr><th>Time</th><th>Action</th><th>Entity</th><th>Entity ID</th><th>User ID</th><th>Metadata</th></tr></thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.created_at.strftime('%d %b %Y %H:%M:%S') if log.created_at else '—' }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.entity }}</td>
+                        <td>{{ log.entity_id or '—' }}</td>
+                        <td>{{ log.user_id or '—' }}</td>
+                        <td style="max-width:280px; white-space:normal;">{{ log.metadata_json or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <p>Showing {{ logs|length }} of {{ pagination.total }} log(s)</p>
+            {% if pagination.pages > 1 %}
+            <div class="pagination-wrap">
+                {% if pagination.has_prev %}<a class="page-btn" href="{{ url_for('students.audit_logs_view', page=pagination.prev_num) }}">Prev</a>{% endif %}
+                <span class="page-meta">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+                {% if pagination.has_next %}<a class="page-btn" href="{{ url_for('students.audit_logs_view', page=pagination.next_num) }}">Next</a>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-scroll"></i><h3>No Logs Yet</h3><p>Audit events will appear here as users perform actions.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,430 @@
+{% extends "layout.html" %}
+{% block title %}{{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+
+{% block content %}
+<div class="profile-header-card">
+    <div class="profile-cover"></div>
+    <div class="profile-info-bar">
+        <div class="profile-avatar">
+            {% if student.photo_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + student.photo_filename) }}" alt="Student Photo">
+            {% else %}
+            <div class="avatar-placeholder"><i class="fas fa-user-graduate"></i></div>
+            {% endif %}
+        </div>
+        <div class="profile-name-section">
+            <h2>{{ student.first_name }} {{ student.middle_name or '' }} {{ student.last_name }}</h2>
+            <p class="profile-id"><i class="fas fa-id-badge"></i> {{ student.student_id }}</p>
+            <span class="badge badge-{{ 'success' if student.status == 'Active' else 'warning' if student.status == 'Suspended' else 'secondary' }} badge-lg">{{ student.status }}</span>
+            <span class="completeness-badge completeness-{{ student.completeness_tier }}" style="margin-left:.45rem;">Profile {{ student.completeness_score }}%</span>
+        </div>
+        <div class="profile-actions">
+            <a href="{{ url_for('students.print_student_profile', student_id=student.id) }}" class="btn btn-outline" target="_blank" rel="noopener"><i class="fas fa-print"></i> Print Profile</a>
+            <a href="{{ url_for('students.print_finance_statement', student_id=student.id) }}" class="btn btn-outline" target="_blank" rel="noopener"><i class="fas fa-file-invoice-dollar"></i> Print Fee Statement</a>
+            {% if current_user.role in ['admin', 'hod'] %}
+            <form method="POST" action="{{ url_for('students.approve_student', student_id=student.id) }}" class="inline-form" onsubmit="return confirm('Approve this student record?')">
+                <button type="submit" class="btn btn-outline"><i class="fas fa-check-circle"></i> Approve</button>
+            </form>
+            {% endif %}
+            <a href="{{ url_for('students.edit_student', student_id=student.id) }}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+            <a href="{{ url_for('students.student_list') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </div>
+</div>
+
+<!-- Details Tabs -->
+<div class="profile-tabs">
+    <button class="tab-btn active" data-tab="personal">Personal</button>
+    <button class="tab-btn" data-tab="contact">Contact</button>
+    <button class="tab-btn" data-tab="academic">Academic</button>
+    <button class="tab-btn" data-tab="education">Education</button>
+    <button class="tab-btn" data-tab="work">Work</button>
+    <button class="tab-btn" data-tab="parents">Parents</button>
+    <button class="tab-btn" data-tab="emergency">Emergency</button>
+    <button class="tab-btn" data-tab="finance">Finance</button>
+    <button class="tab-btn" data-tab="workflow">Workflow</button>
+</div>
+
+<!-- Personal Tab -->
+<div class="tab-content active" id="tab-personal">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-user"></i> Personal Information</h3></div>
+        <div class="card-body">
+            <div class="detail-grid">
+                <div class="detail-item"><label>First Name</label><span>{{ student.first_name }}</span></div>
+                <div class="detail-item"><label>Middle Name</label><span>{{ student.middle_name or '—' }}</span></div>
+                <div class="detail-item"><label>Last Name</label><span>{{ student.last_name }}</span></div>
+                <div class="detail-item"><label>Date of Birth</label><span>{{ student.date_of_birth.strftime('%d %B %Y') if student.date_of_birth else '—' }}</span></div>
+                <div class="detail-item"><label>Gender</label><span>{{ student.gender }}</span></div>
+                <div class="detail-item"><label>Nationality</label><span>{{ student.nationality }}</span></div>
+                <div class="detail-item"><label>National ID</label><span>{{ student.national_id or '—' }}</span></div>
+                <div class="detail-item"><label>Marital Status</label><span>{{ student.marital_status or '—' }}</span></div>
+                <div class="detail-item"><label>Religion</label><span>{{ student.religion or '—' }}</span></div>
+                <div class="detail-item"><label>Blood Group</label><span>{{ student.blood_group or '—' }}</span></div>
+                <div class="detail-item full-width"><label>Disability</label><span>{{ student.disability or 'None' }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Tab -->
+<div class="tab-content" id="tab-contact">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-address-book"></i> Contact Information</h3></div>
+        <div class="card-body">
+            <div class="detail-grid">
+                <div class="detail-item"><label>Email</label><span>{{ student.email or '—' }}</span></div>
+                <div class="detail-item"><label>Phone</label><span>{{ student.phone }}</span></div>
+                <div class="detail-item"><label>Alt. Phone</label><span>{{ student.alt_phone or '—' }}</span></div>
+                <div class="detail-item full-width"><label>Address</label><span>{{ student.address }}</span></div>
+                <div class="detail-item"><label>City</label><span>{{ student.city or '—' }}</span></div>
+                <div class="detail-item"><label>Province</label><span>{{ student.state_province or '—' }}</span></div>
+                <div class="detail-item"><label>Postal Code</label><span>{{ student.postal_code or '—' }}</span></div>
+                <div class="detail-item"><label>Country</label><span>{{ student.country or '—' }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Academic Tab -->
+<div class="tab-content" id="tab-academic">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-graduation-cap"></i> Academic Information</h3></div>
+        <div class="card-body">
+            <div class="detail-grid">
+                <div class="detail-item"><label>Programme</label><span>{{ student.programme or '—' }}</span></div>
+                <div class="detail-item"><label>Department</label><span>{{ student.department or '—' }}</span></div>
+                <div class="detail-item"><label>Intake Year</label><span>{{ student.intake_year or '—' }}</span></div>
+                <div class="detail-item"><label>Intake Semester</label><span>{{ student.intake_semester or '—' }}</span></div>
+                <div class="detail-item"><label>Mode of Study</label><span>{{ student.mode_of_study or '—' }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Education History Tab -->
+<div class="tab-content" id="tab-education">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-school"></i> Education History</h3></div>
+        <div class="card-body">
+            {% if student.education_history %}
+            {% for edu in student.education_history %}
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-university"></i></div>
+                <div class="timeline-content">
+                    <h4>{{ edu.institution_name }}</h4>
+                    <p class="timeline-meta">
+                        <span><i class="fas fa-layer-group"></i> {{ edu.level or '—' }}</span>
+                        <span><i class="fas fa-certificate"></i> {{ edu.qualification or '—' }}</span>
+                        <span><i class="fas fa-bookmark"></i> {{ edu.field_of_study or '—' }}</span>
+                    </p>
+                    <p class="timeline-date">
+                        <i class="fas fa-calendar"></i>
+                        {{ edu.start_date.strftime('%b %Y') if edu.start_date else '?' }} – {{ edu.end_date.strftime('%b %Y') if edu.end_date else 'Present' }}
+                    </p>
+                    <p><strong>Grade:</strong> {{ edu.grade or '—' }} &middot; <strong>Country:</strong> {{ edu.country or '—' }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">No education history recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Work Experience Tab -->
+<div class="tab-content" id="tab-work">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-briefcase"></i> Work Experience</h3></div>
+        <div class="card-body">
+            {% if student.work_experience %}
+            {% for work in student.work_experience %}
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-building"></i></div>
+                <div class="timeline-content">
+                    <h4>{{ work.job_title or 'Position' }} at {{ work.company_name }}</h4>
+                    <p class="timeline-meta">
+                        <span><i class="fas fa-tag"></i> {{ work.employment_type or '—' }}</span>
+                        <span><i class="fas fa-globe"></i> {{ work.country or '—' }}</span>
+                    </p>
+                    <p class="timeline-date">
+                        <i class="fas fa-calendar"></i>
+                        {{ work.start_date.strftime('%b %Y') if work.start_date else '?' }} – {{ work.end_date.strftime('%b %Y') if work.end_date else 'Present' }}
+                    </p>
+                    {% if work.responsibilities %}
+                    <p><strong>Responsibilities:</strong> {{ work.responsibilities }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">No work experience recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Parents Tab -->
+<div class="tab-content" id="tab-parents">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-users"></i> Parent / Guardian Details</h3></div>
+        <div class="card-body">
+            {% if student.parents %}
+            <div class="parents-grid">
+                {% for p in student.parents %}
+                <div class="parent-card-item">
+                    <div class="parent-card-header">
+                        <i class="fas fa-user-tie"></i>
+                        <h4>{{ p.relationship }}</h4>
+                    </div>
+                    <div class="detail-grid compact">
+                        <div class="detail-item"><label>Name</label><span>{{ p.first_name }} {{ p.last_name }}</span></div>
+                        <div class="detail-item"><label>Occupation</label><span>{{ p.occupation or '—' }}</span></div>
+                        <div class="detail-item"><label>Employer</label><span>{{ p.employer or '—' }}</span></div>
+                        <div class="detail-item"><label>Phone</label><span>{{ p.phone or '—' }}</span></div>
+                        <div class="detail-item"><label>Email</label><span>{{ p.email or '—' }}</span></div>
+                        <div class="detail-item"><label>National ID</label><span>{{ p.national_id or '—' }}</span></div>
+                        <div class="detail-item full-width"><label>Address</label><span>{{ p.address or '—' }}</span></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No parent/guardian details recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Emergency Contact Tab -->
+<div class="tab-content" id="tab-emergency">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Emergency Contact & Medical</h3></div>
+        <div class="card-body">
+            <h4 class="sub-heading">Emergency Contact</h4>
+            <div class="detail-grid">
+                <div class="detail-item"><label>Contact Person</label><span>{{ student.emergency_name or '—' }}</span></div>
+                <div class="detail-item"><label>Relationship</label><span>{{ student.emergency_relationship or '—' }}</span></div>
+                <div class="detail-item"><label>Phone</label><span>{{ student.emergency_phone or '—' }}</span></div>
+                <div class="detail-item"><label>Email</label><span>{{ student.emergency_email or '—' }}</span></div>
+                <div class="detail-item full-width"><label>Address</label><span>{{ student.emergency_address or '—' }}</span></div>
+            </div>
+            <h4 class="sub-heading" style="margin-top:1.5rem;">Medical Information</h4>
+            <div class="detail-grid">
+                <div class="detail-item full-width"><label>Medical Conditions</label><span>{{ student.medical_conditions or 'None' }}</span></div>
+                <div class="detail-item full-width"><label>Allergies</label><span>{{ student.allergies or 'None' }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Finance Tab -->
+<div class="tab-content" id="tab-finance">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-coins"></i> Financial Breakdown</h3></div>
+        <div class="card-body">
+            <h4 class="sub-heading">Institute Charges</h4>
+            <div class="detail-grid">
+                <div class="detail-item"><label>Tuition Fee</label><span>Leones {{ '%.2f'|format(student.finance_tuition_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Registration Fee</label><span>Leones {{ '%.2f'|format(student.finance_registration_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Examination Fee</label><span>Leones {{ '%.2f'|format(student.finance_exam_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Library & ICT Fee</label><span>Leones {{ '%.2f'|format(student.finance_library_ict_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Lab / Practical Fee</label><span>Leones {{ '%.2f'|format(student.finance_lab_practical_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Accommodation / Hostel Fee</label><span>Leones {{ '%.2f'|format(student.finance_accommodation_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Miscellaneous Charges</label><span>Leones {{ '%.2f'|format(student.finance_miscellaneous_fee or 0) }}</span></div>
+                <div class="detail-item"><label>Scholarship / Discount</label><span>Leones {{ '%.2f'|format(student.finance_scholarship_discount or 0) }}</span></div>
+            </div>
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Payment Summary</h4>
+            <div class="detail-grid">
+                <div class="detail-item"><label>Net Programme Cost</label><span>Leones {{ '%.2f'|format(student.finance_full_cost or 0) }}</span></div>
+                <div class="detail-item"><label>Other Commitments / Arrears</label><span>Leones {{ '%.2f'|format(student.finance_other_commitments or 0) }}</span></div>
+                <div class="detail-item"><label>Amount Paid</label><span>Leones {{ '%.2f'|format(student.finance_amount_paid or 0) }}</span></div>
+                <div class="detail-item"><label>Outstanding Balance</label><span>Leones {{ '%.2f'|format(student.finance_outstanding or 0) }}</span></div>
+            </div>
+
+            {% if current_user.role in ['admin', 'registrar', 'finance', 'hod'] %}
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Record Payment</h4>
+            <form method="POST" action="{{ url_for('students.add_student_payment', student_id=student.id) }}" class="filter-form">
+                <div class="filter-group"><input type="number" step="0.01" min="0" name="amount" class="filter-input" placeholder="Amount (Le)" required></div>
+                <div class="filter-group">
+                    <select name="payment_method" class="filter-select">
+                        <option>Cash</option>
+                        <option>Bank Transfer</option>
+                        <option>Mobile Money</option>
+                        <option>Card</option>
+                    </select>
+                </div>
+                <div class="filter-group"><input type="text" name="notes" class="filter-input" placeholder="Notes (optional)"></div>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-plus-circle"></i> Add Payment</button>
+            </form>
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Installment Plan</h4>
+            <form method="POST" action="{{ url_for('students.add_installment', student_id=student.id) }}" class="filter-form">
+                <div class="filter-group"><input type="date" name="due_date" class="filter-input" required></div>
+                <div class="filter-group"><input type="number" step="0.01" min="0" name="amount" class="filter-input" placeholder="Installment amount (Le)" required></div>
+                <div class="filter-group"><input type="text" name="notes" class="filter-input" placeholder="Installment notes"></div>
+                <button type="submit" class="btn btn-outline btn-sm"><i class="fas fa-calendar-plus"></i> Add Installment</button>
+            </form>
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Send Reminder</h4>
+            <form method="POST" action="{{ url_for('students.send_due_reminder', student_id=student.id) }}" class="filter-form">
+                <div class="filter-group">
+                    <select name="channel" class="filter-select">
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width:260px;"><input type="text" name="message" class="filter-input" placeholder="Reminder message (optional)"></div>
+                <button type="submit" class="btn btn-outline btn-sm"><i class="fas fa-paper-plane"></i> Send Reminder</button>
+            </form>
+            {% endif %}
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Payment Ledger</h4>
+            {% if student.payments %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Receipt</th><th>Date</th><th>Amount</th><th>Method</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        {% for p in student.payments|sort(attribute='paid_at', reverse=True) %}
+                        <tr>
+                            <td><strong>{{ p.receipt_number }}</strong></td>
+                            <td>{{ p.paid_at.strftime('%d %b %Y %H:%M') if p.paid_at else '—' }}</td>
+                            <td>Leones {{ '%.2f'|format(p.amount or 0) }}</td>
+                            <td>{{ p.payment_method or '—' }}</td>
+                            <td>{{ p.notes or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No receipts recorded yet.</p>
+            {% endif %}
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Installments</h4>
+            {% if student.installments %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Due Date</th><th>Amount</th><th>Status</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        {% for inst in student.installments|sort(attribute='due_date') %}
+                        <tr>
+                            <td>{{ inst.due_date.strftime('%d %b %Y') if inst.due_date else '—' }}</td>
+                            <td>Leones {{ '%.2f'|format(inst.amount or 0) }}</td>
+                            <td><span class="badge badge-{{ 'success' if inst.is_paid else 'warning' }}">{{ 'Paid' if inst.is_paid else 'Pending' }}</span></td>
+                            <td>{{ inst.notes or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No installments scheduled yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Workflow Tab -->
+<div class="tab-content" id="tab-workflow">
+    <div class="detail-card">
+        <div class="card-header"><h3><i class="fas fa-diagram-project"></i> Workflow & Approval</h3></div>
+        <div class="card-body">
+            <div class="detail-grid">
+                <div class="detail-item"><label>Current Stage</label><span>{{ student.workflow_stage or 'Applied' }}</span></div>
+                <div class="detail-item"><label>Stage Updated</label><span>{{ student.stage_updated_at.strftime('%d %b %Y %H:%M') if student.stage_updated_at else '—' }}</span></div>
+                <div class="detail-item"><label>Approved At</label><span>{{ student.approved_at.strftime('%d %b %Y %H:%M') if student.approved_at else '—' }}</span></div>
+            </div>
+
+            {% if current_user.role in ['admin', 'registrar', 'hod'] %}
+            <form method="POST" action="{{ url_for('students.update_student_stage', student_id=student.id) }}" class="filter-form" style="margin-top:1rem;">
+                <div class="filter-group" style="min-width:240px;">
+                    <select name="next_stage" class="filter-select" required>
+                        <option value="">Move to stage...</option>
+                        {% for stage in ['Applied','Screening','Interview','Approved','Registered','Active','Suspended','Graduated','Alumni'] %}
+                        <option value="{{ stage }}">{{ stage }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width:260px;"><input type="text" name="notes" class="filter-input" placeholder="Transition note"></div>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-random"></i> Update Stage</button>
+            </form>
+            {% endif %}
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Stage History</h4>
+            {% if student.stage_history %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>When</th><th>From</th><th>To</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        {% for h in student.stage_history|sort(attribute='changed_at', reverse=True) %}
+                        <tr>
+                            <td>{{ h.changed_at.strftime('%d %b %Y %H:%M') if h.changed_at else '—' }}</td>
+                            <td>{{ h.from_stage or '—' }}</td>
+                            <td>{{ h.to_stage }}</td>
+                            <td>{{ h.notes or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No stage transitions recorded yet.</p>
+            {% endif %}
+
+            <h4 class="sub-heading" style="margin-top:1.25rem;">Student 360 Timeline</h4>
+            {% if activity_timeline %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>When</th><th>Event</th><th>Details</th></tr></thead>
+                    <tbody>
+                        {% for item in activity_timeline %}
+                        <tr>
+                            <td>{{ item.when.strftime('%d %b %Y %H:%M') if item.when else '—' }}</td>
+                            <td><i class="fas {{ item.icon }}" style="margin-right:.35rem;"></i>{{ item.title }}</td>
+                            <td>{{ item.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No timeline events available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Profile tabs
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+function activateTab(tabName) {
+    tabButtons.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => c.classList.remove('active'));
+    const button = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    const content = document.getElementById('tab-' + tabName);
+    if (button && content) {
+        button.classList.add('active');
+        content.classList.add('active');
+    }
+}
+
+tabButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+        activateTab(this.dataset.tab);
+    });
+});
+
+const queryTab = new URLSearchParams(window.location.search).get('tab');
+if (queryTab) {
+    activateTab(queryTab);
+}
+</script>
+{% endblock %}

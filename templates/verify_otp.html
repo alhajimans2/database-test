@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Verify OTP{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+    <div class="login-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <img src="{{ url_for('static', filename='TIT Logo.jpg') }}" alt="TIT Logo" class="login-logo">
+            <h1>Email Verification</h1>
+            <p class="login-subtitle">
+                {% if flow == 'password' %}
+                Enter the 6-digit code sent to your admin email to confirm password change.
+                {% else %}
+                Enter the 6-digit code sent to your admin email to complete login.
+                {% endif %}
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <i class="fas {% if category == 'danger' %}fa-exclamation-circle{% elif category == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="otp_code"><i class="fas fa-shield-alt"></i> Verification Code</label>
+                <input type="text" id="otp_code" name="otp_code" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" required autofocus>
+            </div>
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-check"></i> Verify Code
+            </button>
+            <button
+                type="submit"
+                class="btn btn-outline btn-sm"
+                id="resendOtpBtn"
+                formaction="{{ url_for(resend_endpoint) }}"
+                formmethod="post"
+                style="margin-top:.35rem;"
+                {% if (cooldown_remaining or 0) > 0 %}disabled{% endif %}
+            >
+                <i class="fas fa-rotate-right"></i>
+                <span id="resendOtpLabel">
+                    {% if (cooldown_remaining or 0) > 0 %}
+                    Resend OTP ({{ cooldown_remaining }}s)
+                    {% else %}
+                    Resend OTP
+                    {% endif %}
+                </span>
+            </button>
+            {% if flow == 'password' %}
+            <a class="btn btn-outline" href="{{ url_for('auth.change_password') }}" style="width:100%;">Cancel</a>
+            {% else %}
+            <a class="btn btn-outline" href="{{ url_for('auth.login') }}" style="width:100%;">Back to Login</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const label = document.getElementById('resendOtpLabel');
+    if (!resendBtn || !label) return;
+
+    let remaining = Number({{ cooldown_remaining or 0 }});
+    if (!remaining || remaining <= 0) return;
+
+    const timer = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+            clearInterval(timer);
+            resendBtn.disabled = false;
+            label.textContent = 'Resend OTP';
+            return;
+        }
+        label.textContent = `Resend OTP (${remaining}s)`;
+    }, 1000);
+});
+</script>
+{% endblock %}
