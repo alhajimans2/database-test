@@ -16,6 +16,10 @@
 </head>
 <body data-theme-default="{{ ui_theme_preference or 'system' }}">
     {% block body %}{% endblock %}
+    <div id="globalConnectivityStatus" class="connectivity-status-chip is-online" role="status" aria-live="polite" aria-label="Connection status">
+        <i class="fas fa-wifi"></i>
+        <span>Online</span>
+    </div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

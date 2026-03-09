@@ -5,12 +5,36 @@ document.addEventListener('DOMContentLoaded', () => {
     setupThemeToggle();
     setupSidebar();
     setupCommandBar();
+    setupConnectivityStatus();
     setupMultiStepForm();
     setupAutoDismissAlerts();
     setupAnimatedStatCounters();
     setupFinanceCalculation();
     setupDraftAutosave();
 });
+
+function setupConnectivityStatus() {
+    const statusChip = document.getElementById('globalConnectivityStatus');
+    if (!statusChip) return;
+
+    const icon = statusChip.querySelector('i');
+    const text = statusChip.querySelector('span');
+
+    const applyStatus = (isOnline) => {
+        statusChip.classList.toggle('is-online', isOnline);
+        statusChip.classList.toggle('is-offline', !isOnline);
+        if (icon) {
+            icon.className = isOnline ? 'fas fa-wifi' : 'fas fa-triangle-exclamation';
+        }
+        if (text) {
+            text.textContent = isOnline ? 'Online' : 'Offline';
+        }
+    };
+
+    applyStatus(navigator.onLine);
+    window.addEventListener('online', () => applyStatus(true));
+    window.addEventListener('offline', () => applyStatus(false));
+}
 
 function setupFinanceCalculation() {
     const tuitionInput = document.getElementById('finance_tuition_fee');

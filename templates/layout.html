@@ -114,6 +114,11 @@
         </div>
     </div>
 
+    <div id="globalConnectivityStatus" class="connectivity-status-chip is-online" role="status" aria-live="polite" aria-label="Connection status">
+        <i class="fas fa-wifi"></i>
+        <span>Online</span>
+    </div>
+
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

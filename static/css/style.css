@@ -234,6 +234,41 @@ img {
     font-size: 0.8rem;
 }
 
+.connectivity-status-chip {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1300;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.42rem 0.72rem;
+    border-radius: 999px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid transparent;
+    background: #ffffff;
+    color: var(--gray-700);
+}
+
+.connectivity-status-chip.is-online {
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #047857;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.connectivity-status-chip.is-offline {
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #b91c1c;
+    background: rgba(239, 68, 68, 0.12);
+}
+
+.theme-dark .connectivity-status-chip {
+    background: rgba(30, 41, 59, 0.92);
+    color: #e2e8f0;
+}
+
 /* ===============================
    APP LAYOUT
 ================================= */
